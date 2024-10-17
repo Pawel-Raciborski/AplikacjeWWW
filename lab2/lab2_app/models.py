@@ -1,13 +1,20 @@
 from django.db import models
 
 # Create your models here.
-MONTHS = models.IntegerChoices('Miesiace', 'Styczeń Luty Marzec Kwiecień Maj Czerwiec Lipiec Sierpień Wrzesień Październik Listopad Grudzień')
+MONTHS = models.IntegerChoices('Miesiace',
+                               'Styczeń Luty Marzec Kwiecień Maj Czerwiec Lipiec Sierpień Wrzesień Październik Listopad Grudzień')
 
 SHIRT_SIZES = (
-        ('S', 'Small'),
-        ('M', 'Medium'),
-        ('L', 'Large'),
-    )
+    ('S', 'Small'),
+    ('M', 'Medium'),
+    ('L', 'Large'),
+)
+
+GENDER = (
+    ('M', 'Mężczyzna'),
+    ('K', 'Kobieta'),
+    ('INNE', 'Inne'),
+)
 
 
 class Team(models.Model):
@@ -18,8 +25,22 @@ class Team(models.Model):
         return f"{self.name}"
 
 
-class Person(models.Model):
+class Stanowisko(models.Model):
+    nazwa = models.CharField(max_length=32, blank=False, null=False)
+    opis = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return self.nazwa
+
+
+class Osoba(models.Model):
+    imie = models.CharField(max_length=64, blank=False, null=False)
+    nazwisko = models.CharField(max_length=128, blank=False, null=False)
+    plec = models.CharField(max_length=8, choices=GENDER)
+    stanowisko = models.ForeignKey(Stanowisko, null=True, on_delete=models.SET_NULL)
+
+
+class Person(models.Model):
     name = models.CharField(max_length=60)
     surname = models.CharField(max_length=64, null=True, blank=True)
     shirt_size = models.CharField(max_length=1, choices=SHIRT_SIZES, default=SHIRT_SIZES[0][0])
