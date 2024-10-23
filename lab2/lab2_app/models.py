@@ -47,6 +47,9 @@ class Osoba(models.Model):
     stanowisko = models.ForeignKey(Stanowisko, null=True, on_delete=models.SET_NULL)
     data_dodania = models.DateField(db_default=Now())
 
+    def __str__(self):
+        return f'{self.imie} {self.nazwisko}'
+
 
 class Person(models.Model):
     name = models.CharField(max_length=60)
@@ -56,4 +59,4 @@ class Person(models.Model):
     team = models.ForeignKey(Team, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}, {self.surname}'
