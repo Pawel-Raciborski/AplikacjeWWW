@@ -7,7 +7,8 @@ from lab2_app.models import Stanowisko
 
 class OsobaAdmin(admin.ModelAdmin):
     readonly_fields = ['data_dodania']
-    list_display = ['imie', 'nazwisko', 'plec','display_stanowisko']
+    list_display = ['imie', 'nazwisko', 'plec','display_stanowisko','data_dodania']
+    list_filter = ['data_dodania','stanowisko']
 
     @admin.display(description="Stanowisko")
     def display_stanowisko(self,obj):
