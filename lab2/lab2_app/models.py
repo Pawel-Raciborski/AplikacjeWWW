@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Now
 
 # Create your models here.
 MONTHS = models.IntegerChoices('Miesiace',
@@ -15,6 +16,12 @@ GENDER = (
     ('K', 'Kobieta'),
     ('INNE', 'Inne'),
 )
+
+
+class Gender(models.IntegerChoices):
+    INNE = 0
+    MEZCZYZNA = 1
+    KOBIETA = 2
 
 
 class Team(models.Model):
@@ -36,8 +43,9 @@ class Stanowisko(models.Model):
 class Osoba(models.Model):
     imie = models.CharField(max_length=64, blank=False, null=False)
     nazwisko = models.CharField(max_length=128, blank=False, null=False)
-    plec = models.CharField(max_length=8, choices=GENDER)
+    plec = models.IntegerField(choices=Gender.choices)
     stanowisko = models.ForeignKey(Stanowisko, null=True, on_delete=models.SET_NULL)
+    data_dodania = models.DateField(db_default=Now())
 
 
 class Person(models.Model):
