@@ -53,6 +53,7 @@ class Osoba(models.Model):
     class Meta:
         ordering = ['nazwisko']
 
+
 class Person(models.Model):
     name = models.CharField(max_length=60)
     surname = models.CharField(max_length=64, null=True, blank=True)

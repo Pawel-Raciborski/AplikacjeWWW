@@ -7,6 +7,7 @@ from lab2_app.models import Stanowisko
 
 class OsobaAdmin(admin.ModelAdmin):
     readonly_fields = ['data_dodania']
+    list_display = ['imie', 'nazwisko', 'plec','stanowisko']
 
 
 # Register your models here.
