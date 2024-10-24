@@ -11,10 +11,14 @@ class OsobaSerializer(serializers.Serializer):
     data_dodania = serializers.DateField()
 
 
-class StanowiskoSerializer(serializers.Serializer):
-    nazwa = serializers.CharField(read_only=True)
-    opis = serializers.CharField(read_only=True)
+class StanowiskoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stanowisko
+        fields = ['id', 'nazwa', 'opis']
+        read_only_fields = ['id']
 
 
-class GenderSerializer(serializers.Serializer):
-    nazwa = serializers.CharField(read_only=True)
+class GenderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gender
+        fields = ['id', 'nazwa']
