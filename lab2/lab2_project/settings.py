@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'lab2_app.apps.Lab2AppConfig',
-    'debug_toolbar'
+    'debug_toolbar',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
