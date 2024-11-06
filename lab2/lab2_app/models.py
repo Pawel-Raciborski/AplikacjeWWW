@@ -45,7 +45,7 @@ class Osoba(models.Model):
     nazwisko = models.CharField(max_length=128, blank=False, null=False)
     plec = models.IntegerField(choices=Gender.choices)
     stanowisko = models.ForeignKey(Stanowisko, null=True, on_delete=models.SET_NULL)
-    data_dodania = models.DateField(db_default=Now())
+    data_dodania = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.imie} {self.nazwisko}'
