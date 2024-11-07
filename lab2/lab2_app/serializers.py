@@ -3,13 +3,20 @@ from rest_framework import serializers
 from django.utils import timezone
 
 
-class OsobaSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    imie = serializers.CharField(max_length=64)
-    nazwisko = serializers.CharField(max_length=128)
-    plec = serializers.ChoiceField(choices=Gender.choices)
-    stanowisko = serializers.PrimaryKeyRelatedField(queryset=Stanowisko.objects.all())
-    data_dodania = serializers.DateField()
+class OsobaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Osoba
+        fields = [
+            'imie',
+            'nazwisko',
+            'plec',
+            'stanowisko',
+            'data_dodania']
+
+    def create(self, validated_data):
+        osoba = Osoba(**validated_data)
+        osoba.save()
+        return osoba
 
     def validate_imie(self, value):
         if not value.isalpha():
@@ -27,6 +34,11 @@ class StanowiskoSerializer(serializers.ModelSerializer):
         model = Stanowisko
         fields = ['id', 'nazwa', 'opis']
         read_only_fields = ['id']
+
+    def create(self, validated_data):
+        stanowisko = Stanowisko(**validated_data)
+        stanowisko.save()
+        return stanowisko
 
 
 class GenderSerializer(serializers.ModelSerializer):

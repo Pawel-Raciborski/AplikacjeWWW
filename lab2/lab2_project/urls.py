@@ -17,7 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from debug_toolbar.toolbar import debug_toolbar_urls
+from lab2_app import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-] + debug_toolbar_urls()
+                  path('admin/', admin.site.urls),
+                  path('osoba/create', views.create_osoba),
+                  path('osoba/<int:id>', views.get_osoba),
+                  path('osoba/all', views.get_all_osoba),
+                  path('osoba/alle', views.get_all_osoba_with_name),
+                  path('stanowisko/create', views.create_stanowisko),
+                  path('stanowisko/<int:pk>', views.get_stanowisko),
+                  path('stanowisko/all', views.get_all_stanowisko),
+              ] + debug_toolbar_urls()
