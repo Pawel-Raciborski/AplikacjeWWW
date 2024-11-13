@@ -23,11 +23,13 @@ from rest_framework.authtoken import views as auth_views
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('osoba/create', views.create_osoba),
-                  path('osoba/<int:id>', views.get_osoba),
+                  path('osoba/<int:pk>', views.get_osoba),
+                  path('osoba/<int:pk>/delete', views.delete_osoba),
                   path('osoba/all', views.get_all_osoba),
                   path('osoba/alle', views.get_all_osoba_with_name),
                   path('stanowisko/create', views.create_stanowisko),
                   path('stanowisko/<int:pk>', views.get_stanowisko),
                   path('stanowisko/all', views.get_all_stanowisko),
+                  path('stanowisko/<int:pk>/members', views.get_stanowisko_members),
                   path('api-auth', auth_views.obtain_auth_token)
               ] + debug_toolbar_urls()
