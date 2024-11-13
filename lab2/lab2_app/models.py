@@ -46,6 +46,7 @@ class Osoba(models.Model):
     plec = models.IntegerField(choices=Gender.choices)
     stanowisko = models.ForeignKey(Stanowisko, null=True, on_delete=models.SET_NULL)
     data_dodania = models.DateTimeField(auto_now_add=True)
+    wlasciciel = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='osoby', null=True, blank=True)
 
     def __str__(self):
         return f'{self.imie} {self.nazwisko}'

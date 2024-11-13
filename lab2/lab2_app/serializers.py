@@ -12,6 +12,7 @@ class OsobaSerializer(serializers.ModelSerializer):
             'plec',
             'stanowisko',
             'data_dodania']
+        read_only_fields = ['wlasciciel']
 
     def create(self, validated_data):
         osoba = Osoba(**validated_data)
