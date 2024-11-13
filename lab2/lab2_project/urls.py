@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from debug_toolbar.toolbar import debug_toolbar_urls
 from lab2_app import views
+from rest_framework.authtoken import views as auth_views
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
@@ -28,4 +29,5 @@ urlpatterns = [
                   path('stanowisko/create', views.create_stanowisko),
                   path('stanowisko/<int:pk>', views.get_stanowisko),
                   path('stanowisko/all', views.get_all_stanowisko),
+                  path('api-auth', auth_views.obtain_auth_token)
               ] + debug_toolbar_urls()
