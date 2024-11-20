@@ -1,6 +1,9 @@
+from django.contrib.auth.decorators import permission_required, login_required
+from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -102,5 +105,17 @@ def get_all_stanowisko(request):
 def get_stanowisko_members(request, pk):
     if request.method == 'GET':
         stanowisko_members = Osoba.objects.filter(stanowisko_id=pk)
-        serializer = OsobaSerializer(stanowisko_members,many=True)
+        serializer = OsobaSerializer(stanowisko_members, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+@authentication_classes([BearerTokenAuthentication])
+@permission_classes([IsAuthenticated])
+def osoba_view(request, pk):
+    if not request.user.has_perm('lab2_app.view_osoba'):
+        raise PermissionDenied()
+    try:
+        osoba = Osoba.objects.get(pk=pk)
+        return HttpResponse(f"Osoba o id {osoba.pk} posiada daną permisję")
+    except Osoba.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)

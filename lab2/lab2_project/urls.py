@@ -31,5 +31,6 @@ urlpatterns = [
                   path('stanowisko/<int:pk>', views.get_stanowisko),
                   path('stanowisko/all', views.get_all_stanowisko),
                   path('stanowisko/<int:pk>/members', views.get_stanowisko_members),
-                  path('api-auth', auth_views.obtain_auth_token)
+                  path('api-auth', auth_views.obtain_auth_token),
+                  path('osoba/<int:pk>/has-permission', views.osoba_view),
               ] + debug_toolbar_urls()
