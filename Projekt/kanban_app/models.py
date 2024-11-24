@@ -5,7 +5,7 @@ from rest_framework.authtoken.admin import User
 # Create your models here.
 
 class Board(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, unique=True)
     description = models.TextField(blank=True, null=True)
     users = models.ManyToManyField(User, related_name='boards')
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -13,7 +13,7 @@ class Board(models.Model):
 
 
 class Column(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, unique=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='columns')
     order = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
