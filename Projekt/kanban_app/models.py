@@ -10,6 +10,7 @@ class Board(models.Model):
     users = models.ManyToManyField(User, related_name='boards')
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.name
