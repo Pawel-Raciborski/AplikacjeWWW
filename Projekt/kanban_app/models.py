@@ -11,12 +11,18 @@ class Board(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Column(models.Model):
     name = models.CharField(max_length=256, unique=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='columns')
-    order = models.PositiveIntegerField()
+    order = models.PositiveIntegerField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Priority(models.TextChoices):
@@ -33,6 +39,9 @@ class Task(models.Model):
     priority = models.CharField(choices=Priority.choices, max_length=16, default=Priority.NISKI)
     created_at = models.DateTimeField(auto_now_add=True)
     due_date = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.id} {self.title}"
 
 
 class Comment(models.Model):
