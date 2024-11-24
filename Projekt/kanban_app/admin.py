@@ -10,7 +10,8 @@ class BoardAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "description",
-        "owner"
+        "owner",
+        "finished_at"
     ]
     list_filter = ['created_at']
 
