@@ -1,11 +1,14 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
 
-from kanban_app.models import Board, Column, Task
-from kanban_app.serializers import BoardSerializer, ColumnSerializer, TaskSerializer
+from kanban_app.models import Board, Column, Task, Comment
+from kanban_app.serializers import BoardSerializer, ColumnSerializer, TaskSerializer, CommentSerializer
 
 
 # Create your views here.
@@ -316,3 +319,77 @@ def remove_users_from_task(request, task_id):
         "removed_users": [user.id for user in users],
         "current_users": [user.id for user in task.assign_users.all()]
     })
+
+
+# CRUD Comment
+
+@api_view(['POST'])
+def add_comment(request):
+    request_data = request.data.copy()
+    request_data['user'] = request.user.pk
+    comment_serializer = CommentSerializer(data=request_data)
+
+    if comment_serializer.is_valid():
+        comment_serializer.save()
+        return Response({
+            'message': "Pomyślnie utworzono komentarz",
+            'comment': comment_serializer.data
+        }, status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PATCH'])
+def edit_comment(request, comment_id):
+    try:
+        comment_to_update = Comment.objects.get(pk=comment_id)
+    except Comment.DoesNotExist:
+        return Response({
+            'error': "Nie znaleziono komentarza!"
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    time_edit_limit = comment_to_update.created_at + timedelta(minutes=10)
+
+    if now() > time_edit_limit:
+        return Response({
+            'error': 'Upłynął czas umożliwiający edycję komentarza!'
+        }, status=status.HTTP_409_CONFLICT)
+
+    serializer = CommentSerializer(comment_to_update, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def remove_comment(request, comment_id):
+    try:
+        comment_to_delete = Comment.objects.get(pk=comment_id)
+    except Comment.DoesNotExist:
+        return Response({
+            'error': "Nie znaleziono komentarza!"
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    comment_to_delete.delete()
+    return Response({
+        'message': 'Komentarz usunięto pomyślnie'
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_task_comments(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return Response({
+            'error': 'Nie znaleziono podanego zadania'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    task_comments = task.comments.all()
+    serializer = CommentSerializer(task_comments, many=True)
+
+    return Response({
+        'message': 'Lista komentarzy',
+        'comments': serializer.data
+    }, status=status.HTTP_200_OK)

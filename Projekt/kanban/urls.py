@@ -40,4 +40,8 @@ urlpatterns = [
     path('tasks/<int:task_id>/delete', kanban_views.delete_task),
     path('tasks/<int:task_id>/add-users', kanban_views.add_users_to_task),
     path('tasks/<int:task_id>/remove-users', kanban_views.remove_users_from_task),
+    path('tasks/<int:task_id>/comments', kanban_views.get_task_comments),
+    path('comments/add', kanban_views.add_comment),
+    path('comments/<int:comment_id>/edit', kanban_views.edit_comment),
+    path('comments/<int:comment_id>/delete', kanban_views.remove_comment),
 ]
