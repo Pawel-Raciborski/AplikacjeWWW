@@ -19,7 +19,7 @@ class Board(models.Model):
 class Column(models.Model):
     name = models.CharField(max_length=256, unique=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='columns')
-    order = models.PositiveIntegerField(unique=True)
+    order = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
