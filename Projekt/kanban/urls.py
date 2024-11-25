@@ -29,5 +29,10 @@ urlpatterns = [
     path('boards/<int:pk>/update', kanban_views.update_board),
     path('boards/<int:board_id>/add-members', kanban_views.add_member_to_board),
     path('boards/<int:board_id>/remove-members', kanban_views.remove_member_from_board),
-    path('boards/<int:pk>/team-members', kanban_views.get_board_members)
+    path('boards/<int:pk>/team-members', kanban_views.get_board_members),
+    path('boards/<int:board_id>/columns', kanban_views.get_all_columns),
+    path('columns/create', kanban_views.create_column),
+    path('columns/<int:column_id>/update', kanban_views.update_column),
+    path('columns/<int:column_id>/delete', kanban_views.delete_column),
+
 ]

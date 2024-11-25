@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
 
-from kanban_app.models import Board
-from kanban_app.serializers import BoardSerializer
+from kanban_app.models import Board, Column
+from kanban_app.serializers import BoardSerializer, ColumnSerializer
 
 
 # Create your views here.
@@ -139,3 +139,71 @@ def delete_board(request, board_id):
     board.delete()
 
     return Response("Usunięto pomyślnie projekt", status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_all_columns(request, board_id):
+    try:
+        board = Board.objects.get(id=board_id)
+    except Board.DoesNotExist:
+        return Response({'error': 'Nie znaleziono projektu'}, status=status.HTTP_404_NOT_FOUND)
+
+    columns = board.columns.all().order_by('order')
+    serializer = ColumnSerializer(columns, many=True)
+
+    return Response({
+        'message': 'Pobrano kolumny projektu',
+        'columns': serializer.data
+    }, status=status.HTTP_200_OK)
+
+
+# Column CRUD
+
+@api_view(['POST'])
+def create_column(request):
+    column_serializer = ColumnSerializer(data=request.data)
+
+    column_exist = Column.objects.filter(board_id=request.data['board'],
+                                         order=request.data['order'],
+                                         name=request.data['name']).exists()
+    if column_exist:
+        return Response({
+            'message': 'Dla podanej tabeli istneje kolumna o podanej nazwie!'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    if column_serializer.is_valid():
+        column_serializer.save()
+        return Response({
+            'message': "Utworzono kolumnę",
+            'column': column_serializer.data
+        },
+            status=status.HTTP_201_CREATED
+        )
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT', 'PATCH'])
+def update_column(request, column_id):
+    try:
+        column_to_update = Column.objects.get(pk=column_id)
+    except Column.DoesNotExist:
+        return Response({'error': 'Nie znaleziono kolumny'}, status=status.HTTP_404_NOT_FOUND)
+
+    partial = request.method == 'PATCH'
+    serializer = ColumnSerializer(column_to_update, data=request.data, partial=partial)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def delete_column(request, column_id):
+    try:
+        column_to_delete = Column.objects.get(pk=column_id)
+    except Column.DoesNotExist:
+        return Response({'error': 'Nie znaleziono kolumny'}, status=status.HTTP_404_NOT_FOUND)
+
+    column_to_delete.delete()
+    return Response({'message': f"Usunięto kolumnę o id {column_id}"}, status=status.HTTP_200_OK)
