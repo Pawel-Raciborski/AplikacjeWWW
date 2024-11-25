@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Board(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256)
     description = models.TextField(blank=True, null=True)
     users = models.ManyToManyField(User, related_name='boards')
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
