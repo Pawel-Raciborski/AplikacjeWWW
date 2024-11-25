@@ -16,7 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken import views as auth_views
+import kanban_app.views as kanban_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('auth', auth_views.obtain_auth_token),
+    path('boards/create', kanban_views.create_board),
+    path('boards/all', kanban_views.get_all_boards),
+    path('boards/<int:pk>', kanban_views.get_board),
+    path('boards/<int:board_id>/delete', kanban_views.delete_board),
+    path('boards/<int:pk>/update', kanban_views.update_board),
+    path('boards/<int:board_id>/add-members', kanban_views.add_member_to_board),
+    path('boards/<int:board_id>/remove-members', kanban_views.remove_member_from_board),
+    path('boards/<int:pk>/team-members', kanban_views.get_board_members)
 ]
