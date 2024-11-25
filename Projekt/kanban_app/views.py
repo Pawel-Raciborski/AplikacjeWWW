@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from tutorial.quickstart.serializers import UserSerializer
 
-from kanban_app.models import Board, Column
-from kanban_app.serializers import BoardSerializer, ColumnSerializer
+from kanban_app.models import Board, Column, Task
+from kanban_app.serializers import BoardSerializer, ColumnSerializer, TaskSerializer
 
 
 # Create your views here.
@@ -207,3 +207,112 @@ def delete_column(request, column_id):
 
     column_to_delete.delete()
     return Response({'message': f"Usunięto kolumnę o id {column_id}"}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_column_tasks(request, column_id):
+    try:
+        column = Column.objects.get(pk=column_id)
+    except Column.DoesNotExist:
+        return Response({'error': 'Nie znaleziono kolumny'}, status=status.HTTP_404_NOT_FOUND)
+
+    tasks = column.tasks.all().order_by('due_date')
+    serializer = TaskSerializer(tasks, many=True)
+
+    return Response({
+        "message": "Pobrano wszystkie zadania podanej kolumny",
+        "tasks": serializer.data
+    })
+
+
+@api_view(['POST'])
+def create_task(request):
+    task_serializer = TaskSerializer(data=request.data)
+
+    if task_serializer.is_valid():
+        task_serializer.save()
+        return Response({
+            'message': "Pomyślnie utworzono zadanie",
+            'task': task_serializer.data
+        }, status=status.HTTP_201_CREATED)
+
+
+@api_view(['PUT', 'PATCH'])
+def update_task(request, task_id):
+    try:
+        column_to_update = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return Response({'error': 'Nie znaleziono podanego zadania'}, status=status.HTTP_404_NOT_FOUND)
+
+    partial = request.method == 'PATCH'
+    serializer = TaskSerializer(column_to_update, data=request.data, partial=partial)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            'message': "Zaktualizowano zadanie",
+            'updatedTask': serializer.data
+        }, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def delete_task(request, task_id):
+    try:
+        task_to_delete = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return Response({
+            'error': 'Nie znaleziono podanego zadania'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    task_to_delete.delete()
+
+    return Response({'message': f'Usunięto pomyślnie zadanie o id {task_id}'}, status=status.HTTP_200_OK)
+
+
+@api_view(['PATCH'])
+def add_users_to_task(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return Response({
+            'error': 'Nie znaleziono podanego zadania'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    users_ids = request.data.get('users_ids', [])
+    users = User.objects.filter(id__in=users_ids)
+
+    if not users.exists():
+        return Response({"error": "Lista jest pusta"}, status=status.HTTP_400_BAD_REQUEST)
+
+    task.assign_users.add(*users)
+    return Response({
+        "message": "Dodano nowych użytkowników",
+        "task_id": task_id,
+        "added_users": [user.id for user in users],
+        "current_users": [user.id for user in task.assign_users.all()]
+    })
+
+
+@api_view(['DELETE'])
+def remove_users_from_task(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return Response({
+            'error': 'Nie znaleziono podanego zadania'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    users_ids = request.data.get('users_ids', [])
+    users = User.objects.filter(id__in=users_ids)
+
+    if not users.exists():
+        return Response({"error": "Lista jest pusta"}, status=status.HTTP_400_BAD_REQUEST)
+
+    task.assign_users.remove(*users)
+    return Response({
+        "message": "Usunięto użytkowników z zadania",
+        "task_id": task_id,
+        "removed_users": [user.id for user in users],
+        "current_users": [user.id for user in task.assign_users.all()]
+    })

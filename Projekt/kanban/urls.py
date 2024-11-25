@@ -34,5 +34,10 @@ urlpatterns = [
     path('columns/create', kanban_views.create_column),
     path('columns/<int:column_id>/update', kanban_views.update_column),
     path('columns/<int:column_id>/delete', kanban_views.delete_column),
-
+    path('columns/<int:column_id>/tasks', kanban_views.get_column_tasks),
+    path('tasks/create', kanban_views.create_task),
+    path('tasks/<int:task_id>/update', kanban_views.update_task),
+    path('tasks/<int:task_id>/delete', kanban_views.delete_task),
+    path('tasks/<int:task_id>/add-users', kanban_views.add_users_to_task),
+    path('tasks/<int:task_id>/remove-users', kanban_views.remove_users_from_task),
 ]
