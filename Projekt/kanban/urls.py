@@ -25,6 +25,7 @@ urlpatterns = [
     path('boards/create', kanban_views.create_board),
     path('boards/all', kanban_views.get_all_boards),
     path('boards/<int:pk>', kanban_views.get_board),
+    path('boards/<int:pk>/info', kanban_views.get_board_info),
     path('boards/<int:board_id>/delete', kanban_views.delete_board),
     path('boards/<int:pk>/update', kanban_views.update_board),
     path('boards/<int:board_id>/add-members', kanban_views.add_member_to_board),

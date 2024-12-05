@@ -283,7 +283,8 @@ def add_users_to_task(request, task_id):
         }, status=status.HTTP_404_NOT_FOUND)
 
     users_ids = request.data.get('users_ids', [])
-    users = User.objects.filter(id__in=users_ids)
+    # users = User.objects.filter(id__in=users_ids)
+    users = Board.users.filter(id__in=users_ids)
 
     if not users.exists():
         return Response({"error": "Lista jest pusta"}, status=status.HTTP_400_BAD_REQUEST)
@@ -307,7 +308,7 @@ def remove_users_from_task(request, task_id):
         }, status=status.HTTP_404_NOT_FOUND)
 
     users_ids = request.data.get('users_ids', [])
-    users = User.objects.filter(id__in=users_ids)
+    users = Board.users.objects.filter(id__in=users_ids)
 
     if not users.exists():
         return Response({"error": "Lista jest pusta"}, status=status.HTTP_400_BAD_REQUEST)
@@ -393,3 +394,28 @@ def get_task_comments(request, task_id):
         'message': 'Lista komentarzy',
         'comments': serializer.data
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_board_info(request, pk):
+    try:
+        board = Board.objects.get(pk=pk)
+    except Board.DoesNotExist:
+        return Response({'message': 'Nie znaleziono'}, status=status.HTTP_404_NOT_FOUND)
+
+    columns = Column.objects.filter(board=board)
+    tasks = Task.objects.filter(column__in=columns)
+    serializer = BoardSerializer(board)
+    return Response({
+        "message": "Statystyki projektu",
+        "project": serializer.data,
+        "number_of_users": board.users.count(),
+        "colums_info": {
+            "number_of_columns": columns.count(),
+            "columns": ColumnSerializer(columns,many=True).data
+        },
+        "tasks_info": {
+            "number_of_tasks": tasks.count(),
+            "tasks": TaskSerializer(tasks,many=True).data
+        }
+    })
