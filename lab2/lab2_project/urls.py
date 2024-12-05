@@ -19,6 +19,8 @@ from django.urls import path
 from debug_toolbar.toolbar import debug_toolbar_urls
 from lab2_app import views
 from rest_framework.authtoken import views as auth_views
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
@@ -33,4 +35,5 @@ urlpatterns = [
                   path('stanowisko/<int:pk>/members', views.get_stanowisko_members),
                   path('api-auth', auth_views.obtain_auth_token),
                   path('osoba/<int:pk>/has-permission', views.osoba_view),
+                  path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True)))
               ] + debug_toolbar_urls()
